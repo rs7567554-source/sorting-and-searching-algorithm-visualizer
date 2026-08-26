@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sorting & Searching Algorithm Visualizer | College Capstone Project</title>
+  <meta name="description" content="Interactive, high-performance web visualizer for Sorting and Searching Algorithms.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Application Header -->
+  <header class="app-header">
+    <div class="container header-content">
+      <div class="logo-area">
+        <div class="logo-icon">⚡</div>
+        <div class="logo-text">
+          <h1>Algorithm Visualizer</h1>
+          <span class="logo-badge">Capstone Edition</span>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="nav-tabs" aria-label="Visualizer Modes">
+        <button class="nav-tab active" data-tab="sorting">
+          <span>📊</span> Sorting Visualizer
+        </button>
+        <button class="nav-tab" data-tab="searching">
+          <span>🔍</span> Searching Visualizer
+        </button>
+        <button class="nav-tab" data-tab="benchmark">
+          <span>⚡</span> Performance Benchmark
+        </button>
+      </nav>
+
+      <!-- Header Action Controls -->
+      <div class="header-actions">
+        <button id="soundToggleBtn" class="btn btn-icon" title="Toggle Sound Feedback">
+          🔇 <span>Sound: OFF</span>
+        </button>
+        <button id="themeToggleBtn" class="btn btn-icon" title="Toggle Theme">
+          ☀️ <span>Light Mode</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="main-content">
+    <div class="container">
+
+      <!-- ===================================================================
+           VIEW 1: Visualizer (Sorting & Searching)
+           =================================================================== -->
+      <div id="visualizerView" class="visualizer-view">
+        
+        <!-- Controls Toolbar -->
+        <section class="control-card">
+          <div class="controls-grid">
+            
+            <!-- Algorithm Selection -->
+            <div class="control-group">
+              <label for="algorithmSelect">Algorithm</label>
+              <select id="algorithmSelect" class="select-input">
+                <option value="Bubble Sort">Bubble Sort</option>
+                <option value="Selection Sort">Selection Sort</option>
+                <option value="Insertion Sort">Insertion Sort</option>
+                <option value="Merge Sort">Merge Sort</option>
+                <option value="Quick Sort">Quick Sort</option>
+              </select>
+            </div>
+
+            <!-- Array Size Selection -->
+            <div class="control-group">
+              <label for="arraySizeSelect">Array Size</label>
+              <select id="arraySizeSelect" class="select-input">
+                <option value="5">5 Elements</option>
+                <option value="10" selected>10 Elements</option>
+                <option value="15">15 Elements</option>
+                <option value="20">20 Elements</option>
+                <option value="25">25 Elements</option>
+                <option value="35">35 Elements</option>
+                <option value="50">50 Elements</option>
+              </select>
+            </div>
+
+            <!-- Array Generation Type -->
+            <div class="control-group">
+              <label for="arrayTypeSelect">Dataset Pattern</label>
+              <select id="arrayTypeSelect" class="select-input">
+                <option value="random" selected>Random</option>
+                <option value="nearly_sorted">Nearly Sorted</option>
+                <option value="reversed">Reversed (Worst-case)</option>
+                <option value="few_unique">Few Unique</option>
+                <option value="custom">Custom Input...</option>
+              </select>
+            </div>
+
+            <!-- Custom Array Input (Hidden by default) -->
+            <div id="customArrayGroup" class="control-group" style="display: none;">
+              <label for="customArrayInput">Custom Values (CSV)</label>
+              <input type="text" id="customArrayInput" class="text-input" placeholder="e.g. 45, 12, 89, 34, 21" style="width: 160px;">
+            </div>
+
+            <!-- Search Target Input (Displayed when Searching mode active) -->
+            <div id="targetInputGroup" class="control-group" style="display: none;">
+              <label for="targetInput">Search Target</label>
+              <div style="display: flex; gap: 0.35rem;">
+                <input type="number" id="targetInput" class="text-input" placeholder="Target" style="width: 80px;">
+                <button id="pickRandomTargetBtn" class="btn btn-icon" title="Pick Random Target from Array">🎲</button>
+              </div>
+            </div>
+
+            <!-- Speed Slider -->
+            <div class="control-group slider-group">
+              <div class="slider-header">
+                <label for="speedSlider">Animation Delay</label>
+                <span id="speedDisplay">400ms</span>
+              </div>
+              <input type="range" id="speedSlider" class="range-slider" min="20" max="1000" step="20" value="400">
+            </div>
+
+            <!-- Dataset Generation Button -->
+            <div class="control-group">
+              <button id="generateBtn" class="btn">
+                🎲 Generate Array
+              </button>
+            </div>
+
+            <!-- Playback Action Buttons -->
+            <div class="playback-controls">
+              <button id="startBtn" class="btn btn-primary">
+                ▶ Start
+              </button>
+              <button id="pauseBtn" class="btn" disabled>
+                ⏸ Pause
+              </button>
+              <button id="resumeBtn" class="btn" disabled>
+                ⏯ Resume
+              </button>
+              <button id="stepBackBtn" class="btn btn-icon" title="Step Backward" disabled>
+                ⏮
+              </button>
+              <button id="stepForwardBtn" class="btn btn-icon" title="Step Forward" disabled>
+                ⏭
+              </button>
+              <button id="resetBtn" class="btn">
+                🔄 Reset
+              </button>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- Visualizer Stage -->
+        <section class="stage-card">
+          
+          <!-- Status Bar & Color Legend -->
+          <div class="status-bar">
+            <div class="status-left">
+              <div class="status-indicator"></div>
+              <span id="statusText" class="status-text">Visualizer ready. Click 'Start' to begin.</span>
+            </div>
+            <div class="status-legend">
+              <div class="legend-item"><span class="legend-dot default"></span> Default</div>
+              <div class="legend-item"><span class="legend-dot comparing"></span> Comparing / Checking</div>
+              <div class="legend-item"><span class="legend-dot swapping"></span> Swap / Write</div>
+              <div class="legend-item"><span class="legend-dot pivot"></span> Pivot / Key</div>
+              <div class="legend-item"><span class="legend-dot sorted"></span> Sorted / Found</div>
+              <div class="legend-item"><span class="legend-dot discarded"></span> Discarded</div>
+            </div>
+          </div>
+
+          <!-- Dynamic Bar Canvas -->
+          <div id="visualizerCanvas" class="visualizer-canvas" aria-label="Visualizer Stage">
+            <!-- Array bars rendered dynamically by visualizer.js -->
+          </div>
+
+        </section>
+
+        <!-- Live Metrics Dashboard -->
+        <section class="metrics-grid">
+          
+          <div class="metric-card">
+            <div class="metric-icon">⚖️</div>
+            <div class="metric-data">
+              <span class="metric-label">Comparisons</span>
+              <span id="statComparisons" class="metric-value">0</span>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-icon">🔄</div>
+            <div class="metric-data">
+              <span class="metric-label">Swaps / Writes</span>
+              <span id="statSwaps" class="metric-value">0</span>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-icon">⏱️</div>
+            <div class="metric-data">
+              <span class="metric-label">Visualization Time</span>
+              <span id="statTime" class="metric-value">0.00s</span>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-icon">⚡</div>
+            <div class="metric-data">
+              <span class="metric-label">Pure Algorithm Time</span>
+              <span id="statExecTime" class="metric-value">--</span>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-icon">📈</div>
+            <div class="metric-data">
+              <span class="metric-label">Step Progress</span>
+              <span id="statStepProgress" class="metric-value">--</span>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- Algorithm Information & Complexity Details -->
+        <section class="details-grid">
+          
+          <!-- Complexity & Description Card -->
+          <div class="info-card">
+            <div class="card-header">
+              <h2 id="infoTitle" class="card-title">Bubble Sort</h2>
+              <span id="infoBadge" class="badge">Sorting</span>
+            </div>
+
+            <p id="infoSummary" class="info-text">
+              Repeatedly steps through the list, compares adjacent elements and swaps them if they are in the wrong order.
+            </p>
+
+            <!-- Complexity Matrix -->
+            <div class="complexity-grid">
+              <div class="complexity-item">
+                <span class="complexity-label">Best Time</span>
+                <span id="infoTimeBest" class="complexity-val">O(n)</span>
+              </div>
+              <div class="complexity-item">
+                <span class="complexity-label">Average Time</span>
+                <span id="infoTimeAvg" class="complexity-val">O(n²)</span>
+              </div>
+              <div class="complexity-item">
+                <span class="complexity-label">Worst Time</span>
+                <span id="infoTimeWorst" class="complexity-val">O(n²)</span>
+              </div>
+              <div class="complexity-item">
+                <span class="complexity-label">Space Complexity</span>
+                <span id="infoSpace" class="complexity-val">O(1)</span>
+              </div>
+              <div class="complexity-item">
+                <span class="complexity-label">Stable</span>
+                <span id="infoStable" class="complexity-val">Yes</span>
+              </div>
+              <div class="complexity-item">
+                <span class="complexity-label">In-Place</span>
+                <span id="infoInPlace" class="complexity-val">Yes</span>
+              </div>
+            </div>
+
+            <h3 style="font-size: 0.9rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-main);">Execution Logic:</h3>
+            <ul id="infoSteps" class="steps-list">
+              <li>1. Compare adjacent pairs from left to right.</li>
+              <li>2. Swap if left element is greater than right element.</li>
+              <li>3. Lock the largest unsorted element at the end.</li>
+              <li>4. Repeat until no swaps are needed.</li>
+            </ul>
+          </div>
+
+          <!-- Pseudocode Card -->
+          <div class="info-card">
+            <div class="card-header">
+              <h2 class="card-title">Pseudocode & Reference</h2>
+              <span class="badge">Algorithm Logic</span>
+            </div>
+            <div class="code-container">
+              <pre id="infoPseudocode" class="code-block">procedure bubbleSort(A : list of sortable items)
+    n = length(A)
+    repeat
+        swapped = false
+        for i = 1 to n-1 inclusive do
+            if A[i-1] > A[i] then
+                swap(A[i-1], A[i])
+                swapped = true
+            end if
+        end for
+        n = n - 1
+    until not swapped
+end procedure</pre>
+            </div>
+          </div>
+
+        </section>
+
+      </div>
+
+      <!-- ===================================================================
+           VIEW 2: Performance Benchmark
+           =================================================================== -->
+      <div id="benchmarkView" class="benchmark-view">
+        
+        <div class="benchmark-header-card">
+          <div>
+            <h2 style="font-size: 1.25rem; font-weight: 700;">Multi-Algorithm Performance Benchmark</h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.2rem;">
+              Compare execution speed, comparisons, and swap operations on identical datasets.
+            </p>
+          </div>
+
+          <div style="display: flex; gap: 0.75rem; align-items: center;">
+            <div class="control-group">
+              <label for="benchmarkTypeSelect">Category</label>
+              <select id="benchmarkTypeSelect" class="select-input">
+                <option value="sorting">All Sorting Algorithms</option>
+                <option value="searching">All Searching Algorithms</option>
+              </select>
+            </div>
+
+            <div class="control-group">
+              <label for="benchmarkSizeSelect">Dataset Size (N)</label>
+              <select id="benchmarkSizeSelect" class="select-input">
+                <option value="50">50 Elements</option>
+                <option value="100" selected>100 Elements</option>
+                <option value="250">250 Elements</option>
+                <option value="500">500 Elements</option>
+                <option value="1000">1,000 Elements</option>
+              </select>
+            </div>
+
+            <button id="runBenchmarkBtn" class="btn btn-primary" style="margin-top: auto;">
+              🚀 Run Benchmark
+            </button>
+          </div>
+        </div>
+
+        <!-- Fastest Summary Alert -->
+        <div id="benchmarkFastestAlert" class="benchmark-alert">
+          <!-- Populated dynamically -->
+        </div>
+
+        <!-- Results Table -->
+        <div class="benchmark-table-card">
+          <table class="benchmark-table">
+            <thead>
+              <tr>
+                <th>Algorithm</th>
+                <th>Time (ms)</th>
+                <th>Time (seconds)</th>
+                <th>Comparisons</th>
+                <th>Swaps / Writes</th>
+                <th>Total Steps</th>
+              </tr>
+            </thead>
+            <tbody id="benchmarkTableBody">
+              <!-- Populated dynamically -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Visual Comparative Chart -->
+        <div class="benchmark-chart-card">
+          <h3 style="font-size: 1rem; font-weight: 700; color: var(--text-main);">Execution Time Comparison (Lower is Faster)</h3>
+          <div id="benchmarkChartContainer" class="benchmark-chart-container">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <div class="container footer-content">
+      <div>Sorting and Searching Algorithm Visualizer &bull; College Capstone Demonstration</div>
+      <div>Pure HTML5, CSS3, &amp; ES6+ JavaScript &bull; Runs 100% in Browser</div>
+    </div>
+  </footer>
+
+  <!-- Main Application Script -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
